@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary & Grammar - English Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container session-container">
+        <header>
+            <h1>📖 Vocabulary & Grammar</h1>
+            <button id="backBtn" class="back-btn">← Kembali</button>
+        </header>
+
+        <div class="session-info">
+            <p>Soal <span id="currentQuestionNum">1</span> dari <span id="totalQuestions">10</span></p>
+            <p>Level: <span id="questionLevel">A1</span></p>
+        </div>
+
+        <div class="question-container" id="questionContainer">
+            <!-- Question will be rendered here -->
+        </div>
+
+        <div class="session-actions">
+            <button id="submitBtn" class="submit-btn">Submit</button>
+            <button id="nextBtn" class="next-btn" style="display:none;">Soal Berikutnya →</button>
+        </div>
+
+        <div class="session-progress">
+            <div id="progressBar" style="width:0%"></div>
+        </div>
+
+        <div class="session-result" id="sessionResult" style="display:none;">
+            <h2>Sesi Selesai! 🎉</h2>
+            <p>Benar: <span id="correctCount">0</span></p>
+            <p>Salah: <span id="wrongCount">0</span></p>
+            <p>Akurasi: <span id="accuracyResult">0%</span></p>
+            <button id="finishBtn" class="finish-btn">Selesai</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
