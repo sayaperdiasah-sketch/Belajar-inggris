@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "version": "2.0",
+    "lastUpdated": "2026-09-01",
+    "rules": {
+      "successRateMinShown": 5,
+      "statsAutoUpdate": true,
+      "weightByLevel": { "A1": 1, "A2": 2, "B1": 3, "B2": 4, "C1": 5 },
+      "adaptivePriority": true,
+      "fuzzyMatching": true
+    },
+    "note": "Field 'commonMistakes' digunakan untuk memberikan umpan balik spesifik saat user memilih jawaban salah. 'acceptAnswers' untuk variasi jawaban fill_blank."
+  },
+  "questions": [
+    {
+      "id": "voc-0001",
+      "skill": "vocabulary",
+      "level": "A1",
+      "weight": 1,
+      "type": "multiple_choice",
+      "question": "What is the meaning of 'happy'?",
+      "options": ["Sedih", "Senang", "Marah", "Takut"],
+      "answer": "Senang",
+      "explanation": "'Happy' adalah perasaan senang atau gembira. Lawan katanya adalah 'sad' (sedih).",
+      "commonMistakes": {
+        "Sedih": "Ini artinya 'sad', kebalikan dari happy.",
+        "Marah": "Ini artinya 'angry', bukan happy.",
+        "Takut": "Ini artinya 'scared' atau 'afraid'."
+      },
+      "hint": "Pikirkan perasaan saat mendapat hadiah.",
+      "tags": ["adjective", "feelings"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "voc-0002",
+      "skill": "vocabulary",
+      "level": "A1",
+      "weight": 1,
+      "type": "multiple_choice",
+      "question": "What is the meaning of 'big'?",
+      "options": ["Kecil", "Besar", "Tinggi", "Pendek"],
+      "answer": "Besar",
+      "explanation": "'Big' berarti besar dalam ukuran atau dimensi. 'Tall' untuk tinggi, 'large' untuk volume.",
+      "commonMistakes": {
+        "Kecil": "Itu artinya 'small'.",
+        "Tinggi": "Itu artinya 'tall' atau 'high'.",
+        "Pendek": "Itu artinya 'short'."
+      },
+      "hint": "Bayangkan gajah vs semut.",
+      "tags": ["adjective", "size"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "voc-0003",
+      "skill": "vocabulary",
+      "level": "B1",
+      "weight": 3,
+      "type": "multiple_choice",
+      "question": "What is the meaning of 'exhausted'?",
+      "options": ["Sangat lelah", "Sangat senang", "Sangat marah", "Sangat cepat"],
+      "answer": "Sangat lelah",
+      "explanation": "'Exhausted' berarti kehabisan tenaga secara fisik atau mental, lebih kuat dari 'tired'. Sering dipakai setelah aktivitas berat.",
+      "commonMistakes": {
+        "Sangat senang": "Itu artinya 'delighted' atau 'overjoyed'.",
+        "Sangat marah": "Itu artinya 'furious' atau 'livid'.",
+        "Sangat cepat": "Itu artinya 'very fast' atau 'rapid'."
+      },
+      "hint": "Rasanya setelah lari 10 km.",
+      "tags": ["adjective", "feelings"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "gram-0001",
+      "skill": "grammar",
+      "level": "A1",
+      "weight": 1,
+      "type": "fill_blank",
+      "question": "She ___ to school every day.",
+      "answer": "goes",
+      "acceptAnswers": ["goes", "go"],
+      "explanation": "Untuk subjek 'she' (orang ketiga tunggal) di Simple Present, kata kerja harus ditambah 's' atau 'es'. 'Go' menjadi 'goes'.",
+      "hint": "Perhatikan subjeknya: she, he, it → pakai verb+s/es.",
+      "tags": ["present_simple", "subject_verb_agreement"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "gram-0002",
+      "skill": "grammar",
+      "level": "A1",
+      "weight": 1,
+      "type": "fill_blank",
+      "question": "They ___ playing football now.",
+      "answer": "are",
+      "acceptAnswers": ["are"],
+      "explanation": "Present Continuous untuk subjek jamak ('they') menggunakan 'are' + verb-ing. Tanda 'now' menunjukkan kejadian sedang berlangsung.",
+      "hint": "Cari kata 'now' → petunjuk present continuous.",
+      "tags": ["present_continuous"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "lis-0001",
+      "skill": "listening",
+      "level": "A1",
+      "weight": 1,
+      "type": "multiple_choice",
+      "audio_text": "The cat is sleeping on the chair.",
+      "audio_url": null,
+      "question": "Where is the cat sleeping?",
+      "options": ["On the table", "On the chair", "On the floor", "On the bed"],
+      "answer": "On the chair",
+      "explanation": "Audio secara jelas menyebutkan 'on the chair'. Fokus pada kata benda terakhir yang disebut.",
+      "commonMistakes": {
+        "On the table": "Terdengar mirip, tetapi audio menyebut 'chair'.",
+        "On the floor": "Tidak disebut sama sekali dalam audio.",
+        "On the bed": "Tidak disebut sama sekali dalam audio."
+      },
+      "hint": "Dengarkan baik-baik kata terakhir sebelum jeda.",
+      "tags": ["listening_comprehension"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "spk-0001",
+      "skill": "speaking",
+      "level": "A1",
+      "weight": 1,
+      "type": "shadowing",
+      "text": "Could you please repeat that?",
+      "explanation": "Frase sopan untuk meminta pengulangan. Intonasi naik di akhir 'that?' menunjukkan pertanyaan.",
+      "tips": "Rekam diri, lalu bandingkan dengan TTS. Perhatikan: 'repeat' diucapkan /rɪˈpiːt/ dan 'that' /ðæt/.",
+      "hint": "Bayangkan Anda tidak mendengar telepon dengan jelas.",
+      "tags": ["polite_expression", "daily_use"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCompleted": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "voc-0004",
+      "skill": "vocabulary",
+      "level": "A2",
+      "weight": 2,
+      "type": "multiple_choice",
+      "question": "What is the meaning of 'curious'?",
+      "options": ["Acuh", "Ingin tahu", "Takut", "Marah"],
+      "answer": "Ingin tahu",
+      "explanation": "'Curious' berarti ingin tahu atau penasaran, dorongan untuk belajar atau menemukan sesuatu.",
+      "commonMistakes": {
+        "Acuh": "Itu artinya 'indifferent' atau 'uninterested'.",
+        "Takut": "Itu artinya 'scared'.",
+        "Marah": "Itu artinya 'angry'."
+      },
+      "hint": "Anak kecil yang selalu bertanya 'mengapa'.",
+      "tags": ["adjective", "character"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "gram-0003",
+      "skill": "grammar",
+      "level": "A2",
+      "weight": 2,
+      "type": "fill_blank",
+      "question": "I ___ (be) born in 1990.",
+      "answer": "was",
+      "acceptAnswers": ["was"],
+      "explanation": "Past Simple untuk subjek 'I' menggunakan 'was'. Ini menunjukkan kejadian yang sudah selesai di masa lalu.",
+      "hint": "Ada tahun spesifik (1990) → petunjuk past tense.",
+      "tags": ["past_simple", "to_be"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "lis-0002",
+      "skill": "listening",
+      "level": "A2",
+      "weight": 2,
+      "type": "multiple_choice",
+      "audio_text": "She went to the library to borrow a book.",
+      "audio_url": null,
+      "question": "Why did she go to the library?",
+      "options": ["To study", "To borrow a book", "To meet a friend", "To return a book"],
+      "answer": "To borrow a book",
+      "explanation": "Kalimat audio menyebutkan 'to borrow a book' sebagai tujuan.",
+      "commonMistakes": {
+        "To study": "Tidak disebut dalam audio.",
+        "To meet a friend": "Tidak disebut dalam audio.",
+        "To return a book": "Tidak disebut, yang disebut adalah 'borrow' (meminjam)."
+      },
+      "hint": "Dengarkan kata kerja yang muncul setelah 'to'.",
+      "tags": ["listening_comprehension"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCorrect": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    },
+    {
+      "id": "spk-0002",
+      "skill": "speaking",
+      "level": "A2",
+      "weight": 2,
+      "type": "shadowing",
+      "text": "I would like to order a coffee, please.",
+      "explanation": "Frase sopan untuk memesan di kafe. 'Would like' lebih formal daripada 'want'.",
+      "tips": "Tekankan 'coffee' dan turunkan intonasi di akhir kalimat (pernyataan).",
+      "hint": "Bayangkan sedang di Starbucks.",
+      "tags": ["daily_expression", "ordering"],
+      "source": "self-authored",
+      "stats": { "timesShown": 0, "timesCompleted": 0, "successRate": null, "lastShown": null, "avgResponseTimeMs": null }
+    }
+  ]
+}
