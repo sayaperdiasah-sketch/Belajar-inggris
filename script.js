@@ -999,4 +999,632 @@ function submitAnswer() {
         
     } else if (q.type === 'fill_blank') {
         const input = document.getElementById('fillInput');
-        userAnswer = input.value.trim().to
+        userAnswer = input.value.trim().toLowerCase();
+        const expected = q.answer.toLowerCase();
+        isCorrect = userAnswer === expected;
+        
+        input.classList.add(isCorrect ? 'correct' : 'wrong');
+        input.disabled = true;
+        
+        // Show correct answer if wrong
+        if (!isCorrect) {
+            const hint = document.createElement('p');
+            hint.style.color = '#22c55e';
+            hint.style.marginTop = '8px';
+            hint.textContent = `Jawaban benar: ${q.answer}`;
+            input.parentNode.appendChild(hint);
+        }
+        
+    } else if (q.type === 'shadowing') {
+        // For shadowing, mark as complete (always correct for now)
+        isCorrect = true;
+        userAnswer = 'shadowing_completed';
+    }
+    
+    // Update session stats
+    if (isCorrect) {
+        currentSession.correct++;
+    } else {
+        currentSession.wrong++;
+    }
+    
+    // Update progress for spaced repetition
+    const state = getState();
+    if (currentSession.type === 'review') {
+        // For review, update the progress item
+        const progressItem = q._progressItem;
+        if (progressItem) {
+            updateItemProgress(state, progressItem.idSoal, isCorrect);
+        }
+    } else {
+        // For new material, add to progress
+        updateItemProgress(state, q.id, isCorrect);
+    }
+    
+    // Update streak - user is active
+    updateStreak(state);
+    
+    // Save session log
+    state.riwayatSesi.push({
+        tanggal: getToday(),
+        skill: currentSession.skill,
+        jumlahBenar: isCorrect ? 1 : 0,
+        jumlahSalah: isCorrect ? 0 : 1,
+        jenis: currentSession.type
+    });
+    saveState(state);
+    
+    // Update UI
+    submitBtn.style.display = 'none';
+    nextBtn.style.display = 'inline-block';
+    
+    // Check if this was the last question
+    if (currentSession.currentIndex >= currentSession.questions.length - 1) {
+        nextBtn.textContent = 'Lihat Hasil';
+    } else {
+        nextBtn.textContent = 'Soal Berikutnya →';
+    }
+}
+
+function nextQuestion() {
+    currentSession.currentIndex++;
+    
+    // Save current session
+    localStorage.setItem('currentSession', JSON.stringify(currentSession));
+    
+    if (currentSession.currentIndex >= currentSession.questions.length) {
+        showSessionResult();
+    } else {
+        renderQuestion();
+    }
+}
+
+function showSessionResult() {
+    document.getElementById('questionContainer').style.display = 'none';
+    document.getElementById('sessionInfo').style.display = 'none';
+    document.getElementById('sessionActions').style.display = 'none';
+    document.getElementById('sessionResult').style.display = 'block';
+    
+    document.getElementById('correctCount').textContent = currentSession.correct;
+    document.getElementById('wrongCount').textContent = currentSession.wrong;
+    const total = currentSession.correct + currentSession.wrong;
+    const accuracy = total > 0 ? Math.round((currentSession.correct / total) * 100) : 0;
+    document.getElementById('accuracyResult').textContent = accuracy + '%';
+}
+
+function finishSession() {
+    localStorage.removeItem('currentSession');
+    window.location.href = 'index.html';
+}
+
+// ============================================================
+// LISTENING PAGE - Audio Playback
+// ============================================================
+
+let speechSynthesis = window.speechSynthesis;
+let utterance = null;
+
+function playAudio() {
+    const container = document.getElementById('questionContainer');
+    const q = currentSession.questions[currentSession.currentIndex];
+    
+    if (!q || !q.audio_text) {
+        alert('Teks audio tidak tersedia.');
+        return;
+    }
+    
+    // Cancel any ongoing speech
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
+    
+    utterance = new SpeechSynthesisUtterance(q.audio_text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    
+    speechSynthesis.speak(utterance);
+}
+
+// ============================================================
+// SPEAKING PAGE - Recording
+// ============================================================
+
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedBlob = null;
+
+function toggleRecording() {
+    const recordBtn = document.getElementById('recordBtn');
+    const playbackBtn = document.getElementById('playbackBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        // Stop recording
+        mediaRecorder.stop();
+        recordBtn.textContent = '🎙️ Rekam Lagi';
+        recordBtn.classList.remove('recording');
+        playbackBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'inline-block';
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    // Start recording
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+            
+            mediaRecorder.onstop = () => {
+                recordedBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                // Save to localStorage (optional)
+                const reader = new FileReader();
+                reader.onload = function() {
+                    try {
+                        localStorage.setItem('recordedAudio_' + currentSession.currentIndex, 
+                            reader.result);
+                    } catch(e) {
+                        console.log('Audio too large for localStorage');
+                    }
+                };
+                reader.readAsDataURL(recordedBlob);
+            };
+            
+            mediaRecorder.start();
+            recordBtn.textContent = '⏹️ Stop Rekam';
+            recordBtn.classList.add('recording');
+            playbackBtn.style.display = 'none';
+            submitBtn.style.display = 'none';
+        })
+        .catch(err => {
+            alert('Tidak dapat mengakses mikrofon. Pastikan izin diberikan.');
+            console.error('Microphone error:', err);
+        });
+}
+
+function playRecording() {
+    if (recordedBlob) {
+        const audioUrl = URL.createObjectURL(recordedBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+    } else {
+        alert('Tidak ada rekaman yang tersimpan.');
+    }
+}
+
+// ============================================================
+// REVIEW PAGE
+// ============================================================
+
+function loadReviewSession() {
+    const state = getState();
+    const dueItems = getDueItems(state, questionBank);
+    
+    if (dueItems.length === 0) {
+        document.getElementById('questionContainer').innerHTML = 
+            '<p class="empty-message">🎉 Semua item sudah direview! Kembali lagi besok.</p>';
+        document.getElementById('reviewActions').style.display = 'none';
+        document.getElementById('totalQuestions').textContent = '0';
+        return;
+    }
+    
+    // Convert to session format
+    const questions = dueItems.map(item => ({
+        ...item.question,
+        _progressItem: item
+    }));
+    
+    currentSession = {
+        skill: 'review',
+        questions: questions,
+        currentIndex: 0,
+        correct: 0,
+        wrong: 0,
+        type: 'review'
+    };
+    
+    localStorage.setItem('currentSession', JSON.stringify(currentSession));
+    document.getElementById('reviewActions').style.display = 'flex';
+    document.getElementById('totalQuestions').textContent = questions.length;
+    renderReviewQuestion();
+}
+
+function renderReviewQuestion() {
+    const qs = currentSession.questions;
+    const idx = currentSession.currentIndex;
+    
+    if (idx >= qs.length) {
+        showSessionResult();
+        return;
+    }
+    
+    const q = qs[idx];
+    document.getElementById('currentQuestionNum').textContent = idx + 1;
+    document.getElementById('totalQuestions').textContent = qs.length;
+    document.getElementById('reviewStatus').textContent = `Review item ${idx + 1} dari ${qs.length}`;
+    
+    const container = document.getElementById('questionContainer');
+    container.innerHTML = `
+        <div style="padding:10px 0;">
+            <span style="background:#dbeafe; padding:2px 12px; border-radius:12px; font-size:0.8rem; color:#3b82f6;">
+                ${q.skill}
+            </span>
+            <span style="background:#f1f5f9; padding:2px 12px; border-radius:12px; font-size:0.8rem; margin-left:8px;">
+                ${q.level}
+            </span>
+        </div>
+        <div class="question-text" style="font-size:1.2rem; margin:12px 0;">${q.question}</div>
+        ${q.options ? `<div style="color:#64748b; margin:8px 0;">${q.options.join(' | ')}</div>` : ''}
+        <div style="margin-top:12px; padding:12px; background:#f8fafc; border-radius:8px;">
+            <p><strong>Jawaban Anda sebelumnya:</strong> ${q._progressItem.statusBenarTerakhir ? '✅ Benar' : '❌ Salah'}</p>
+            <p><strong>Jumlah review:</strong> ${q._progressItem.jumlahReview || 0}</p>
+        </div>
+    `;
+    
+    document.getElementById('progressBar').style.width = ((idx / qs.length) * 100) + '%';
+}
+
+function reviewAnswer(isCorrect) {
+    const q = currentSession.questions[currentSession.currentIndex];
+    const state = getState();
+    
+    // Update progress
+    updateItemProgress(state, q.id, isCorrect);
+    
+    // Update session stats
+    if (isCorrect) {
+        currentSession.correct++;
+    } else {
+        currentSession.wrong++;
+    }
+    
+    // Save session log
+    state.riwayatSesi.push({
+        tanggal: getToday(),
+        skill: 'review',
+        jumlahBenar: isCorrect ? 1 : 0,
+        jumlahSalah: isCorrect ? 0 : 1,
+        jenis: 'review'
+    });
+    saveState(state);
+    
+    // Move to next question
+    currentSession.currentIndex++;
+    localStorage.setItem('currentSession', JSON.stringify(currentSession));
+    
+    if (currentSession.currentIndex >= currentSession.questions.length) {
+        showSessionResult();
+    } else {
+        renderReviewQuestion();
+    }
+}
+
+// ============================================================
+// RIWAYAT PAGE
+// ============================================================
+
+function renderRiwayat() {
+    const state = getState();
+    const health = calculateHealthScore(state, questionBank);
+    
+    // Stats summary
+    const totalSessions = state.riwayatSesi.length;
+    document.getElementById('totalSessions').textContent = totalSessions;
+    document.getElementById('totalItems').textContent = state.progresItem.length;
+    document.getElementById('bestStreak').textContent = state.bestStreak || 0;
+    document.getElementById('currentLevel').textContent = state.profilUser.level || 'A1';
+    
+    // Skill progress
+    const skillStats = getSkillStats(state);
+    document.getElementById('skillVocabBar').style.width = skillStats.vocabulary + '%';
+    document.getElementById('skillVocabText').textContent = skillStats.vocabulary + '%';
+    document.getElementById('skillListeningBar').style.width = skillStats.listening + '%';
+    document.getElementById('skillListeningText').textContent = skillStats.listening + '%';
+    document.getElementById('skillSpeakingBar').style.width = skillStats.speaking + '%';
+    document.getElementById('skillSpeakingText').textContent = skillStats.speaking + '%';
+    
+    // History log
+    renderHistoryLog(state);
+    
+    // Charts - using Chart.js if available
+    renderCharts(state);
+}
+
+function getSkillStats(state) {
+    const stats = { vocabulary: 0, listening: 0, speaking: 0 };
+    const skills = ['vocabulary', 'listening', 'speaking'];
+    
+    skills.forEach(skill => {
+        const sessions = state.riwayatSesi.filter(s => s.skill === skill || 
+            (s.skill === 'vocab-grammar' && skill === 'vocabulary'));
+        if (sessions.length > 0) {
+            let correct = 0;
+            let total = 0;
+            sessions.forEach(s => {
+                correct += s.jumlahBenar || 0;
+                total += (s.jumlahBenar || 0) + (s.jumlahSalah || 0);
+            });
+            stats[skill] = total > 0 ? Math.round((correct / total) * 100) : 0;
+        }
+    });
+    
+    return stats;
+}
+
+function renderHistoryLog(state) {
+    const container = document.getElementById('historyLog');
+    const logs = state.riwayatSesi.slice(-20).reverse();
+    
+    if (logs.length === 0) {
+        container.innerHTML = '<p class="empty-message">Belum ada sesi belajar</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    logs.forEach(log => {
+        const div = document.createElement('div');
+        div.className = 'history-entry';
+        const badgeClass = log.jenis === 'review' ? 'review' : 'materi-baru';
+        const total = (log.jumlahBenar || 0) + (log.jumlahSalah || 0);
+        const accuracy = total > 0 ? Math.round(((log.jumlahBenar || 0) / total) * 100) : 0;
+        div.innerHTML = `
+            <span>${log.tanggal} - ${log.skill}</span>
+            <span>
+                <span class="badge ${badgeClass}">${log.jenis}</span>
+                ${accuracy}% (${log.jumlahBenar || 0}/${total})
+            </span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function renderCharts(state) {
+    // Check if Chart is available
+    if (typeof Chart === 'undefined') {
+        document.querySelectorAll('.chart-section canvas').forEach(c => {
+            c.parentNode.innerHTML = '<p class="empty-message">Chart.js belum dimuat. Periksa koneksi internet.</p>';
+        });
+        return;
+    }
+    
+    // Get data for last 30 days
+    const days = 30;
+    const labels = [];
+    const accuracyData = [];
+    const retentionData = [];
+    const scoreData = [];
+    
+    for (let i = days - 1; i >= 0; i--) {
+        const date = getDateDaysAgo(i);
+        labels.push(date);
+        
+        // Get sessions for this day
+        const daySessions = state.riwayatSesi.filter(s => s.tanggal === date);
+        let correct = 0;
+        let total = 0;
+        daySessions.forEach(s => {
+            correct += s.jumlahBenar || 0;
+            total += (s.jumlahBenar || 0) + (s.jumlahSalah || 0);
+        });
+        accuracyData.push(total > 0 ? Math.round((correct / total) * 100) : null);
+        
+        // Retention - items reviewed on this day
+        const dayReviews = state.progresItem.filter(i => i.tanggalTerakhirDiulang === date);
+        let retCorrect = 0;
+        let retTotal = 0;
+        dayReviews.forEach(i => {
+            retTotal += 1;
+            retCorrect += i.statusBenarTerakhir ? 1 : 0;
+        });
+        retentionData.push(retTotal > 0 ? Math.round((retCorrect / retTotal) * 100) : null);
+        
+        // Score - use learning health if available
+        const health = state.learningHealthScore;
+        if (health && health.tanggal === date) {
+            scoreData.push(health.skorTotal);
+        } else {
+            scoreData.push(null);
+        }
+    }
+    
+    // Health chart
+    const ctx1 = document.getElementById('healthChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Learning Health Score',
+                    data: scoreData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Accuracy & Retention chart
+    const ctx2 = document.getElementById('accuracyRetentionChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Akurasi',
+                    data: accuracyData,
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Retensi',
+                    data: retentionData,
+                    backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                    borderColor: '#22c55e',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// ============================================================
+// EVENT LISTENERS - INDEX PAGE
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load question bank
+    loadQuestionBank();
+    
+    // Check which page we're on
+    const path = window.location.pathname;
+    
+    if (path.includes('index.html') || path === '/' || path === '') {
+        renderDashboard();
+        setupIndexEvents();
+    } else if (path.includes('vocab-grammar.html')) {
+        loadSessionPage();
+        setupSessionEvents('vocab-grammar');
+    } else if (path.includes('listening.html')) {
+        loadSessionPage();
+        setupSessionEvents('listening');
+        setupListeningEvents();
+    } else if (path.includes('speaking.html')) {
+        loadSessionPage();
+        setupSessionEvents('speaking');
+        setupSpeakingEvents();
+    } else if (path.includes('review.html')) {
+        setupReviewEvents();
+    } else if (path.includes('riwayat.html')) {
+        renderRiwayat();
+        setupRiwayatEvents();
+    }
+});
+
+function setupIndexEvents() {
+    // Session buttons
+    document.querySelectorAll('.session-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const skill = this.dataset.skill;
+            startSession(skill, 'materiBaru');
+        });
+    });
+    
+    // Review button
+    document.getElementById('reviewBtn').addEventListener('click', function() {
+        window.location.href = 'review.html';
+    });
+}
+
+function setupSessionEvents(skill) {
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', function() {
+        if (confirm('Yakin ingin keluar? Progress sesi akan hilang.')) {
+            localStorage.removeItem('currentSession');
+            window.location.href = 'index.html';
+        }
+    });
+    
+    // Submit button
+    document.getElementById('submitBtn').addEventListener('click', submitAnswer);
+    
+    // Next button
+    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+    
+    // Finish button
+    document.getElementById('finishBtn').addEventListener('click', finishSession);
+}
+
+function setupListeningEvents() {
+    document.getElementById('playAudioBtn').addEventListener('click', playAudio);
+}
+
+function setupSpeakingEvents() {
+    document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+    document.getElementById('playbackBtn').addEventListener('click', playRecording);
+}
+
+function setupReviewEvents() {
+    // Load review session
+    loadReviewSession();
+    
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', function() {
+        localStorage.removeItem('currentSession');
+        window.location.href = 'index.html';
+    });
+    
+    // Correct/Wrong buttons
+    document.getElementById('correctBtn').addEventListener('click', function() {
+        reviewAnswer(true);
+    });
+    document.getElementById('wrongBtn').addEventListener('click', function() {
+        reviewAnswer(false);
+    });
+    
+    // Finish button
+    document.getElementById('finishBtn').addEventListener('click', finishSession);
+}
+
+function setupRiwayatEvents() {
+    document.getElementById('backBtn').addEventListener('click', function() {
+        window.location.href = 'index.html';
+    });
+}
+
+// ============================================================
+// EXPOSE FOR HTML EVENT ATTRIBUTES
+// ============================================================
+
+window.selectOption = selectOption;
+window.checkFillInput = checkFillInput;
+window.submitAnswer = submitAnswer;
+window.nextQuestion = nextQuestion;
+window.playAudio = playAudio;
+window.toggleRecording = toggleRecording;
+window.playRecording = playRecording;
+window.reviewAnswer = reviewAnswer;
+window.finishSession = finishSession;
+window.startSession = startSession;
+
+// ============================================================
+// INITIALIZATION - Load question bank
+// ============================================================
+
+loadQuestionBank();
+
+console.log('📚 English Learning App initialized successfully!');
+console.log(`📝 Loaded ${questionBank.length} questions`);
