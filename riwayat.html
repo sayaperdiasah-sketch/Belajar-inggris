@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat - English Learning</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Riwayat Belajar</h1>
+            <button id="backBtn" class="back-btn">← Kembali</button>
+        </header>
+
+        <section class="stats-summary">
+            <div class="stat-card">
+                <h3>Total Sesi</h3>
+                <p id="totalSessions">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Item Dipelajari</h3>
+                <p id="totalItems">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Streak Terbaik</h3>
+                <p id="bestStreak">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Level Saat Ini</h3>
+                <p id="currentLevel">A1</p>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <h2>📈 Tren Learning Health Score</h2>
+            <canvas id="healthChart"></canvas>
+        </section>
+
+        <section class="chart-section">
+            <h2>📊 Akurasi & Retensi</h2>
+            <canvas id="accuracyRetentionChart"></canvas>
+        </section>
+
+        <section class="skill-progress">
+            <h2>🎯 Progres per Skill</h2>
+            <div id="skillProgressContainer">
+                <div class="skill-progress-item">
+                    <span>Vocabulary & Grammar</span>
+                    <div class="progress-bar"><div id="skillVocabBar" style="width:0%"></div></div>
+                    <span id="skillVocabText">0%</span>
+                </div>
+                <div class="skill-progress-item">
+                    <span>Listening</span>
+                    <div class="progress-bar"><div id="skillListeningBar" style="width:0%"></div></div>
+                    <span id="skillListeningText">0%</span>
+                </div>
+                <div class="skill-progress-item">
+                    <span>Speaking</span>
+                    <div class="progress-bar"><div id="skillSpeakingBar" style="width:0%"></div></div>
+                    <span id="skillSpeakingText">0%</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-log">
+            <h2>📜 Log Sesi Terakhir</h2>
+            <div id="historyLog">
+                <p class="empty-message">Belum ada sesi belajar</p>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <a href="index.html">🏠 Dashboard</a>
+            <a href="riwayat.html" class="active">📊 Riwayat</a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
