@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review - English Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container session-container">
+        <header>
+            <h1>📝 Sesi Review (Gratis)</h1>
+            <button id="backBtn" class="back-btn">← Kembali</button>
+        </header>
+
+        <div class="session-info">
+            <p>Item <span id="currentQuestionNum">1</span> dari <span id="totalQuestions">0</span></p>
+            <p id="reviewStatus">Tidak ada item yang perlu direview</p>
+        </div>
+
+        <div class="question-container" id="questionContainer">
+            <p class="empty-message">🎉 Semua item sudah direview! Kembali lagi besok.</p>
+        </div>
+
+        <div class="session-actions" id="reviewActions" style="display:none;">
+            <button id="correctBtn" class="correct-btn">✅ Benar</button>
+            <button id="wrongBtn" class="wrong-btn">❌ Salah</button>
+        </div>
+
+        <div class="session-progress">
+            <div id="progressBar" style="width:0%"></div>
+        </div>
+
+        <div class="session-result" id="sessionResult" style="display:none;">
+            <h2>Review Selesai! 🎉</h2>
+            <p>Total item direview: <span id="totalReviewed">0</span></p>
+            <p>Benar: <span id="correctReviewCount">0</span></p>
+            <p>Salah: <span id="wrongReviewCount">0</span></p>
+            <button id="finishBtn" class="finish-btn">Selesai</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
