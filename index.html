@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - English Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 English Learning Dashboard</h1>
+            <div class="header-info">
+                <span id="currentDate"></span>
+                <span id="streakDisplay">🔥 0 hari</span>
+            </div>
+        </header>
+
+        <!-- Energy Section -->
+        <section class="energy-section">
+            <h2>⚡ Energi Hari Ini</h2>
+            <div class="energy-display">
+                <div class="energy-bubbles" id="energyBubbles"></div>
+                <p id="energyText">Sisa: 5 dari 5</p>
+                <p class="energy-note">* Reset setiap pukul 00:00</p>
+            </div>
+            
+            <div class="energy-allocation">
+                <h3>Alokasi Harian</h3>
+                <ul>
+                    <li><span class="skill-tag vocab">Vocabulary & Grammar</span> 2 energi</li>
+                    <li><span class="skill-tag listening">Listening</span> 1 energi</li>
+                    <li><span class="skill-tag speaking">Speaking</span> 1 energi</li>
+                    <li><span class="skill-tag free">Slot Bebas</span> 1 energi</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Learning Health Score -->
+        <section class="health-section">
+            <h2>💪 Learning Health Score</h2>
+            <div class="health-score">
+                <div class="score-circle" id="healthScoreCircle">
+                    <span id="healthScoreNumber">--</span>
+                </div>
+                <div class="health-details">
+                    <div class="health-item">
+                        <span>Akurasi</span>
+                        <div class="progress-bar"><div id="accuracyBar" style="width:0%"></div></div>
+                        <span id="accuracyText">0%</span>
+                    </div>
+                    <div class="health-item">
+                        <span>Retensi</span>
+                        <div class="progress-bar"><div id="retentionBar" style="width:0%"></div></div>
+                        <span id="retentionText">0%</span>
+                    </div>
+                    <div class="health-item">
+                        <span>Konsistensi</span>
+                        <div class="progress-bar"><div id="consistencyBar" style="width:0%"></div></div>
+                        <span id="consistencyText">0%</span>
+                    </div>
+                    <div class="health-item">
+                        <span>Progres Level</span>
+                        <div class="progress-bar"><div id="growthBar" style="width:0%"></div></div>
+                        <span id="growthText">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Session Start -->
+        <section class="session-section">
+            <h2>🎯 Mulai Sesi</h2>
+            <div class="session-grid">
+                <button class="session-btn vocab-btn" data-skill="vocab-grammar" data-energy="2">
+                    <span class="skill-icon">📖</span>
+                    <span class="skill-name">Vocabulary & Grammar</span>
+                    <span class="energy-cost">2 ⚡</span>
+                </button>
+                <button class="session-btn listening-btn" data-skill="listening" data-energy="1">
+                    <span class="skill-icon">🎧</span>
+                    <span class="skill-name">Listening</span>
+                    <span class="energy-cost">1 ⚡</span>
+                </button>
+                <button class="session-btn speaking-btn" data-skill="speaking" data-energy="1">
+                    <span class="skill-icon">🗣️</span>
+                    <span class="skill-name">Speaking</span>
+                    <span class="energy-cost">1 ⚡</span>
+                </button>
+                <button class="session-btn free-btn" data-skill="free" data-energy="1">
+                    <span class="skill-icon">🎯</span>
+                    <span class="skill-name">Slot Bebas</span>
+                    <span class="energy-cost">1 ⚡</span>
+                </button>
+            </div>
+            <div class="session-actions">
+                <button id="reviewBtn" class="review-btn">📝 Sesi Review (Gratis)</button>
+            </div>
+        </section>
+
+        <!-- Review Queue -->
+        <section class="review-queue-section">
+            <h2>📋 Antrean Review</h2>
+            <div id="reviewQueue">
+                <p class="empty-message">Tidak ada item yang perlu direview hari ini</p>
+            </div>
+        </section>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="active">🏠 Dashboard</a>
+            <a href="riwayat.html">📊 Riwayat</a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
