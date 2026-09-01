@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaking - English Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container session-container">
+        <header>
+            <h1>🗣️ Speaking (Shadowing)</h1>
+            <button id="backBtn" class="back-btn">← Kembali</button>
+        </header>
+
+        <div class="session-info">
+            <p>Kalimat <span id="currentQuestionNum">1</span> dari <span id="totalQuestions">10</span></p>
+            <p>Level: <span id="questionLevel">A1</span></p>
+        </div>
+
+        <div class="question-container" id="questionContainer">
+            <!-- Question will be rendered here -->
+        </div>
+
+        <div class="speaking-controls">
+            <button id="recordBtn" class="record-btn">🎙️ Mulai Rekam</button>
+            <button id="playbackBtn" class="playback-btn" style="display:none;">▶️ Putar Rekaman</button>
+            <button id="submitBtn" class="submit-btn" style="display:none;">Selesai</button>
+        </div>
+
+        <div class="session-progress">
+            <div id="progressBar" style="width:0%"></div>
+        </div>
+
+        <div class="session-result" id="sessionResult" style="display:none;">
+            <h2>Sesi Selesai! 🎉</h2>
+            <p>Kamu telah menyelesaikan <span id="totalDone">0</span> kalimat</p>
+            <p>Rekaman tersimpan di lokal</p>
+            <button id="finishBtn" class="finish-btn">Selesai</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
